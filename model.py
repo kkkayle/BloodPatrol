@@ -52,9 +52,6 @@ class ResidualConv1D(nn.Module):
 
 
 
-
-
-
 class PolyLoss(nn.Module):
     def __init__(self, DEVICE,weight_loss=None, epsilon=1.0):
         super(PolyLoss, self).__init__()
@@ -104,19 +101,14 @@ class Model(pl.LightningModule):
         self.test_out=[]
         self.desired_output_dim=100
         self.layer_norm=nn.LayerNorm(self.in_feats_dim)
-        self.cnn_weight=WeightNetwork(100)
         self.ts_weight=WeightNetwork(100)
-
 
 
     def forward(self,x):
         x=self.layer_norm(x)
-        #conv=self.conv_layers(x.permute(0, 2, 1)).permute(0, 2, 1)
         encode=self.encoder(x)
         encode_pooled=self.max_pooling(encode)
-        #cv_max_pooled=self.max_pooling(conv)
         ts_pooled=self.ts_weight(encode_pooled)*0.5+encode_pooled*0.5
-        #cv_pooled=self.cnn_weight(cv_max_pooled)*0.5+cv_max_pooled*0.5
         pooled=self.conv_pool(ts_pooled.permute(0, 2, 1)).permute(0, 2, 1)
         out = self.decoder(pooled.reshape(x.shape[0],-1))
         return out
@@ -132,25 +124,17 @@ class Model(pl.LightningModule):
         """
         out=torch.tensor([i[0] for i in self.val_out])
         label=torch.tensor([i[1] for i in self.val_out])
-        
         metrics = self.cal_metrics(out, label)
-        acc = metrics['F1']
-        self.log("val_acc", acc, prog_bar=True, logger=True, on_epoch=True)
-        
+        f1 = metrics['F1']
+        self.log("val_f1", f1, prog_bar=True, logger=True, on_epoch=True)
         self.val_out.clear()
+        
     def max_pooling(self, x):
         x = x.permute(0, 2, 1)
-        
         pooled = F.adaptive_max_pool1d(x, output_size=self.desired_output_dim)
         pooled = pooled.permute(0, 2, 1)
-        
         return pooled
     
-    def mean_pooling(self, x):
-        x = x.permute(0, 2, 1)
-        pooled = adaptive_avg_pool1d(x, output_size=self.desired_output_dim)
-        pooled = pooled.permute(0, 2, 1)
-        return pooled
 
     def loss_function(self, pred, target):
         loss=self.ploy_loss(pred,target)
@@ -207,7 +191,6 @@ class Model(pl.LightningModule):
 
     def test_step(self, test_batch, batch_idx):
         x, label = test_batch
-        
         out = self(x)
         out = out.detach().cpu().numpy().tolist()
         label = label.detach().cpu().numpy().tolist()
@@ -215,8 +198,6 @@ class Model(pl.LightningModule):
             self.test_out.append([out[i],label[i]])
 
     def on_test_epoch_end(self):
-
-
         out = torch.tensor([i[0] for i in self.test_out])
         label = torch.tensor([i[1] for i in self.test_out])
         metrics = self.cal_metrics(out, label)
@@ -229,39 +210,13 @@ class Model(pl.LightningModule):
 
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters(), lr=self.hparams.lr, betas=(0.9, 0.999),weight_decay=1e-4)
+        """
         max_lr=self.hparams.lr
         base_lr = max_lr/5.0
         scheduler = torch.optim.lr_scheduler.CyclicLR(optimizer,
             base_lr=base_lr,max_lr=max_lr,
             step_size_up=2*self.hparams.epoch_size,cycle_momentum=False)
         self.print("set lr = "+str(max_lr))
-        
-        return ([optimizer],[scheduler])
-        #return ([optimizer])
-
-
-
-    
-    
-def adaptive_avg_pool1d(input, output_size):
-
-    input_size = input.size()
-    
-
-    stride = input_size[2] // output_size
-    
-
-    output = torch.zeros(input_size[0], input_size[1], output_size).cuda()
-    
-
-    for i in range(output_size):
-        start = i * stride
-        end = (i + 1) * stride if i < output_size - 1 else input_size[2]
-        
-
-        window = input[:, :, start:end]
-        
-
-        output[:, :, i] = torch.mean(window, dim=2)
-    
-    return output
+        """
+        #return ([optimizer],[scheduler])
+        return ([optimizer])

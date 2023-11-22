@@ -45,11 +45,11 @@ if args.mode=='train':
         shutil.rmtree('./checkpoint')
     for fold in range(args.fold_nums):
         train_df, val_df,class_weight = train_val_split(train_val_df,fold_nums=args.fold_nums, fold=fold)
-        #读取tensor字典
+        
         train_dict=DataDict(train_df,tensor_path)
         val_dict=DataDict(val_df,tensor_path)
         test_dict=DataDict(test_df,tensor_path)
-        #创建dataset
+        
         train_dataset=LogisticDataset(train_dict,train_df)
         val_dataset=LogisticDataset(val_dict,val_df)
         test_dataset=LogisticDataset(test_dict,test_df)
@@ -59,9 +59,10 @@ if args.mode=='train':
         test_dataloader=DataLoader(test_dataset,batch_size=1,shuffle=False,num_workers=0)
 
         model=Model(class_weight,args.dataset)
+        
         checkpoint_callback = ModelCheckpoint(
         save_top_k=1,
-        monitor="val_acc",
+        monitor="val_f1",
         mode="max",
         dirpath='./checkpoint',
         filename=f"checkpoint_model",
@@ -71,7 +72,7 @@ if args.mode=='train':
                     
 
         trainer = pl.Trainer(accelerator="gpu", devices=1, max_epochs=50,accumulate_grad_batches=4, logger=pl.loggers.CSVLogger('logs'),
-                                enable_checkpointing=True, callbacks=[checkpoint_callback,pl.callbacks.StochasticWeightAveraging(swa_lrs=0.00005,annealing_epochs=5,swa_epoch_start=0.6)])
+                                enable_checkpointing=True, callbacks=[checkpoint_callback,pl.callbacks.StochasticWeightAveraging(swa_lrs=0.0001,annealing_epochs=1,swa_epoch_start=0.3)])
 
         trainer.fit(model, train_dataloader, val_dataloader)
         checkpoint = torch.load(os.path.join('./checkpoint',model_path[fold]))
