@@ -21,7 +21,7 @@ The dataset can be downloaded from the link below[1]:
 [Download Dataset](https://drive.google.com/drive/folders/1VcmDOdBbG46ILRd99TM2ZsZHBpcMazZ6)
 
 ## Usage Instructions
-1. Download all files and extract them to the `dataset` folder.]
+1. Download all files and extract them to the `dataset` folder.
 ```
 📂dataset
   ┣📂B-ALL
