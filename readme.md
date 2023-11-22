@@ -33,8 +33,9 @@ The dataset can be downloaded from the link below[1]:
 
 # How to Run
 Use the following command to train the model:
-python main.py --mode=train --dataset=CLL/B-ALL
-
+```
+python main.py --mode=train/test --dataset=CLL/B-ALL
+```
 # Acknowledgments
 We thank all co-authors of the following articles for providing data.
 
