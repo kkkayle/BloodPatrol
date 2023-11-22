@@ -32,7 +32,7 @@ The dataset can be downloaded from the link below[1]:
 2. Run `./utils/dataset.py` to convert flow cytometry data into tensors.
 
 # How to Run
-Use the following command to train the model:
+Use the following command to run the model:
 ```
 python main.py --mode=train/test --dataset=CLL/B-ALL
 ```
