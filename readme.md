@@ -1,10 +1,13 @@
-# Requirements
-numpy=1.24.3
-pandas=1.5.3
-matplotlib=3.7.1
-seaborn=0.12.2
-torch=1.13.1
-pytorch-lightning=1.5.6
+# System Requirements
+- Python Version: 3.9.16
+- Libraries:
+  - numpy=1.24.3
+  - pandas=1.5.3
+  - matplotlib=3.7.1
+  - seaborn=0.12.2
+  - torch=1.13.1
+  - pytorch-lightning=1.5.6
+  - scikit-learn=1.0.2
 # Blood Cancer Auxiliary Diagnosis Platform
 
 Welcome to our free-to-use website designed to assist medical staff with the auxiliary diagnosis of blood cancers. This platform harnesses advanced technology to provide a reliable support tool for healthcare professionals.
