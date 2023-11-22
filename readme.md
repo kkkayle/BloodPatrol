@@ -22,11 +22,13 @@ The dataset can be downloaded from the link below[1]:
 
 ## Usage Instructions
 1. Download all files and extract them to the `dataset` folder.]
+```
 📂dataset
   ┣📂B-ALL
   ┣📂CLL_24
   ┣📂CLL_102
   ┗📂CLL_162
+```
 2. Run `./utils/dataset.py` to convert flow cytometry data into tensors.
 
 # How to Run
