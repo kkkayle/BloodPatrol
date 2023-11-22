@@ -3,7 +3,6 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score, roc_auc_score, average_precision_score
-import numpy as np
 class WeightNetwork(nn.Module):
     def __init__(self, filed_size, reduction_ratio=3):
         super(WeightNetwork, self).__init__()
@@ -21,7 +20,7 @@ class WeightNetwork(nn.Module):
         V = torch.mul(inputs, torch.unsqueeze(A, dim=-1))
         return V
 
-import torch.nn as nn
+
 
 class ResidualConv1D(nn.Module):
     def __init__(self,dim_1,dim_2,dim_3):
@@ -76,10 +75,7 @@ class Model(pl.LightningModule):
         self.in_feats_dim=11 if dataset=='B-ALL' else 16
         self.nhead=11 if dataset=='B-ALL' else 4
         self.transformer=nn.TransformerEncoderLayer(d_model=self.in_feats_dim,nhead=self.nhead)
-        
         self.encoder = nn.TransformerEncoder(self.transformer,num_layers=1)
-        self.conv_layers =ResidualConv1D(self.in_feats_dim,32,self.in_feats_dim)
-
         self.conv_pool=ResidualConv1D(self.in_feats_dim,self.in_feats_dim,4)
         
         self.step_size_up=5
