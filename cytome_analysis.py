@@ -28,16 +28,14 @@ def cytome_analysis(model,data,begin,end,num_parts,file_name):
         raise ValueError("end is greater than the length of data")
     elif end-begin<num_parts:
         raise ValueError("num_parts is greater than the length of block")
-    # 初始数据
-    x = data[begin:end]
-    # 计算初始概率
+    # Calculate initial probability
     initial_prob = F.softmax(model(data.unsqueeze(0)).cpu().detach(),dim=1)[0,1]
-    # 用于存储概率变化的列表
+    # List used to store probability changes
     results = []
     part_size = (end - begin) // num_parts
 
     for i in range(begin, end, part_size):
-        # 确保不会超出数据的末尾
+        # Make sure not to exceed the end of the data
         if i + part_size > end:
             new_x = data[:i]
         else:
@@ -54,11 +52,11 @@ def cytome_analysis(model,data,begin,end,num_parts,file_name):
     return float(initial_prob), csv_path, png_path
 
 def run_model(blood_cancer_type: str, file_name: str, begin: int = None, end: int = None, num_parts: int = 100) -> torch.Tensor:
-    #blood_caner_type:CLL or B-ALL 网页端可以做两个入口
-    #file_name:用户上传的csv/txt文件路径
-    #begin:用于可解释性分析的单细胞初始下标
-    #end:用于可解释性分析的单细胞结束下标
-    #num_parts:用于可解释性分析的单细胞子集数量 用户最大设置100 多了算太慢
+    #blood_caner_type:CLL or B-ALL
+    #file_name: csv/txt file path uploaded by the user
+    #begin: Single cell initial subscripts for interpretability analysis
+    #end: Single cell end index for interpretability analysis
+    #num_parts: Number of single cell subsets used for interpretability analysis
     
     model_path='./pretrained_model/CLL.ckpt' if blood_cancer_type=='CLL' else './pretrained_model/B-ALL.ckpt'
     #load model
