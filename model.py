@@ -69,7 +69,7 @@ class PolyLoss(nn.Module):
 
 
 class Model(pl.LightningModule):
-    def __init__(self,class_weight,dataset):
+    def __init__(self,class_weight,dataset,lr=0.0001):
         super().__init__()
         self.save_hyperparameters()
         self.in_feats_dim=11 if dataset=='B-ALL' else 16
